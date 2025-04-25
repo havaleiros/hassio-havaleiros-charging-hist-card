@@ -1,0 +1,9 @@
+{
+  "name": "Havaleiros Brasil - Card de Histórico de carregamento",
+  "content_in_root": false,
+  "filename": "charging-hist-card.js",
+  "render_readme": true,
+  "domains": ["lovelace"],
+  "country": "BR",
+  "homeassistant": "2023.5.0"
+}

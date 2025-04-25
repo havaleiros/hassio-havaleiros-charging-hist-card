@@ -1,0 +1,9 @@
+{
+  "domain": "hassio-havaleiros-charging-hist-card",
+  "name": "Havaleiros Brasil - Card de Histórico de carregamento",
+  "documentation": "https://github.com/havaleiros/hassio-havaleiros-charging-hist-card",
+  "dependencies": [],
+  "codeowners": ["@havaleiros"],
+  "version": "0.0.1",
+  "requirements": []
+}

@@ -1,0 +1,17 @@
+{
+  "name": "havaleiros-charging-hist",
+  "version": "0.0.1",
+  "description": "Cartão Lovelace para histórico de carregamento de veículos GWM",
+  "main": "www/charging-hist-card.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/havaleiros/hassio-havaleiros-charging-hist-card.git"
+  },
+  "type": "module",
+  "author": "Havaleiros Brasil",
+  "license": "Apache-2.0",
+  "bugs": {
+		"url": "https://github.com/havaleiros/hassio-havaleiros-charging-hist-card/issues"
+	},
+  "homepage": "https://github.com/havaleiros/hassio-havaleiros-charging-hist-card#readme"
+}

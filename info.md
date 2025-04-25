@@ -1,0 +1,1 @@
+Cartão Lovelace para exibição do histórico de carregamento de veículos GWM com filtros, paginação e exportação CSV.
