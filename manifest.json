@@ -4,6 +4,6 @@
   "documentation": "https://github.com/havaleiros/hassio-havaleiros-charging-hist-card",
   "dependencies": [],
   "codeowners": ["@havaleiros"],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "requirements": []
 }

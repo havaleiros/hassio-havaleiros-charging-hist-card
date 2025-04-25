@@ -41,8 +41,13 @@ class ChargingHistoryCard extends HTMLElement {
       const h = Math.floor(ms / 3600000);
       const m = Math.floor((ms % 3600000) / 60000);
       return `${h}h${m.toString().padStart(2, '0')}m`;
-    }
-  
+    }  
+
+    DateTimeFormat = {
+      STRING: 'STRING',
+      DATE: 'DATE',
+    };
+
     _getLogs() {
       const entity = this._hass.states[this.config.entity];
       if (!entity || !entity.attributes.charging_logs) return [];
@@ -58,9 +63,8 @@ class ChargingHistoryCard extends HTMLElement {
       entries.forEach(item => {
         const [inicio, fim] = item.split('~').map(x => x.trim());
     
-        // Conversão do formato DD/MM/YYYY HH:mm para MM/DD/YYYY HH:mm
-        const start = new Date(inicio.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'));
-        const end = new Date(fim.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'));
+        const start = this._parseOrFormatDate(inicio, this.DateTimeFormat.DATE);
+        const end = this._parseOrFormatDate(fim, this.DateTimeFormat.DATE);
     
         registros.push({
           inicio,
@@ -71,21 +75,56 @@ class ChargingHistoryCard extends HTMLElement {
       });
     
       return registros;
+    }    
+   
+    _parseOrFormatDate(dateTimeStr, returnType = DateTimeFormat.STRING) {
+      const amPmPattern = /\d{2}\/\d{2}\/\d{4} \d{2}:\d{2} (AM|PM)/;
+      const amPmPatternSec = /\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} (AM|PM)/;
+
+      const formatDate = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}${seconds !== '00' ? ':' + seconds : ''}`;
+      };
+
+      const parseDateTime = (dateTimeStr) => {
+        dateTimeStr = dateTimeStr.replace(',','');
+        const [datePart, timePart, am_pm] = dateTimeStr.replace(',','').split(' ');
+        
+        const [hours, minutes, seconds] = timePart.split(':');
+        let hour = parseInt(hours, 10);
+
+        let [month, day, year] = "";
+        if(am_pm) {
+          [month, day, year] = datePart.split('/');          
+          if (hour !== 12 && am_pm.includes('PM')) hour += 12;
+          if (hour === 12 && am_pm.includes('AM')) hour -= 12;
+        }
+        else
+          [day, month, year] = datePart.split('/');
+      
+        const finalDate = new Date(year, month - 1, day, hour, minutes, seconds || "00");
+        if (isNaN(finalDate)) {
+          console.error(`Erro na conversão da data: ${dateTimeStr}`);
+        }
+        return finalDate;
+      }      
+
+      var parsedDate = parseDateTime(dateTimeStr);
+      return returnType === this.DateTimeFormat.DATE ? parsedDate : formatDate(parsedDate);
     }
-    
-    _parseDateTimeBr(dateTimeStr) {
-      const [datePart, timePart] = dateTimeStr.split(' ');
-      const [day, month, year] = datePart.split('/');
-      const [hours, minutes] = timePart.split(':');
-      return new Date(year, month - 1, day, hours, minutes);
-    }
-  
+
     _filterLogs() {
       const logs = this._getLogs();
   
       this.filteredLogs = logs.filter(log => {
-        const start = this._parseDateTimeBr(log.inicio);
-        const end = this._parseDateTimeBr(log.fim);
+        const start = this._parseOrFormatDate(log.inicio, this.DateTimeFormat.DATE);
+        const end = this._parseOrFormatDate(log.fim, this.DateTimeFormat.DATE);
         const duration = log.duracao;
   
         const startFilter = this.startDate ? new Date(this.startDate + 'T00:00') <= start : true;      
@@ -129,8 +168,8 @@ class ChargingHistoryCard extends HTMLElement {
     const paginatedLogs = this._getPaginatedLogs();
     const rows = paginatedLogs.map(log => `
       <tr>
-        <td>${log.inicio}</td>
-        <td>${log.fim}</td>
+        <td>${this._parseOrFormatDate(log.inicio, this.DateTimeFormat.STRING)}</td>
+        <td>${this._parseOrFormatDate(log.fim, this.DateTimeFormat.STRING)}</td>
         <td>${log.duracaoFormatada}</td>
       </tr>
     `).join('');
@@ -187,7 +226,7 @@ class ChargingHistoryCard extends HTMLElement {
             onchange="this.getRootNode().host.minDuration = Number(this.value); this.getRootNode().host._filterLogs(); this.getRootNode().host.currentPage = 1; this.getRootNode().host.render();">          
         </div>
   
-        <h3>Última atualização: ${this.lastUpdate}</h3> 
+        <h3>Última atualização: ${this._parseOrFormatDate(this.lastUpdate, this.DateTimeFormat.STRING)}</h3> 
   
         <table>
           <thead>
