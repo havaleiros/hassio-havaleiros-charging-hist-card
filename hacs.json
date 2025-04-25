@@ -4,6 +4,7 @@
   "filename": "charging-hist-card.js",
   "render_readme": true,
   "domains": ["lovelace"],
+  "type": "lovelace",
   "country": "BR",
   "homeassistant": "2023.5.0"
 }
