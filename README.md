@@ -4,7 +4,7 @@ Este é um cartão customizado para Home Assistant que exibe o histórico de car
 
 ### Passo a Passo para adicionar um novo repositório no HACS
 
-1. Certifique-se de que o HACS já está instalado e configurado no seu Home Assistant. Caso ainda não tenha instalado, siga o [guia de instalação do HACS](https://hacs.xyz/docs/setup/download).
+1. Certifique-se de que o HACS já está instalado e configurado no seu Home Assistant. Caso ainda não tenha instalado, siga o [guia de instalação do HACS](https://hacs.xyz/docs/use/).
 
 2. Acesse a interface web do Home Assistant.
 
